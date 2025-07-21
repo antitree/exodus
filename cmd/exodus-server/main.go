@@ -77,7 +77,8 @@ func extractData(msg dnsmessage.Message) (e entry, err error) {
 	}
 
 	// Normalize and split domain labels
-	domains := strings.Split(strings.ToLower(msg.Questions[0].Name.String()), ".")
+	domains := strings.Split(msg.Questions[0].Name.String(), ".")
+
 	if len(domains) < 5 {
 		return e, fmt.Errorf("dns question is missing required information")
 	}
