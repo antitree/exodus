@@ -78,7 +78,6 @@ func extractData(msg dnsmessage.Message) (e entry, err error) {
 
 	// Normalize and split domain labels
 	domains := strings.Split(msg.Questions[0].Name.String(), ".")
-
 	if len(domains) < 5 {
 		return e, fmt.Errorf("dns question is missing required information")
 	}
@@ -120,7 +119,7 @@ func start(conn *net.UDPConn, dataDir string) {
 		e, err := extractData(msg)
 		if err != nil {
 			log.Println(err)
-			continue
+			// continue
 		}
 
 		if *verbose {
@@ -129,7 +128,7 @@ func start(conn *net.UDPConn, dataDir string) {
 
 		if err := e.save(dataDir); err != nil {
 			log.Println(err)
-			continue
+			// continue
 		}
 
 		msg.Answers = append(msg.Answers, dnsmessage.Resource{
