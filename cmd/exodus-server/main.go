@@ -56,7 +56,7 @@ func main() {
 		dataDir = *dataDirF
 	}
 
-	conn, err := net.ListenUDP("udp4", &net.UDPAddr{Port: *port})
+	conn, err := net.ListenUDP("udp4", &net.UDPAddr{IP: net.IPv4zero, Port: *port})
 	if err != nil {
 		log.Fatalf("failed network listen, %s", err.Error())
 	}
@@ -76,11 +76,13 @@ func extractData(msg dnsmessage.Message) (e entry, err error) {
 		return e, fmt.Errorf("dns query has no questions")
 	}
 
-	domains := strings.Split(msg.Questions[0].Name.String(), ".")
+	// Normalize and split domain labels
+	domains := strings.Split(strings.ToLower(msg.Questions[0].Name.String()), ".")
 	if len(domains) < 5 {
-		return e, fmt.Errorf("dns question is missing requiered information")
+		return e, fmt.Errorf("dns question is missing required information")
 	}
 
+	// Decode base58 data from the first label
 	e.data, err = base58.Decode(domains[0])
 	if err != nil {
 		return e, fmt.Errorf("failed decoding data, %w", err)
